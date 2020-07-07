@@ -1,9 +1,37 @@
+'use strict';
+
 class Frame {
-  constructor(array) {
-    this.rolls = array;
+  constructor(index) {
+    this.firstRoll = 0;
+    this.secondRoll = 0;
+    this.thirdRoll = 0;
+    this.index = index;
+    this.score = 0;
   }
-  getRolls() {
-    return this.rolls;
+  roll(x,y,z) {
+    this.firstRoll = x;
+    if (y) {
+      this.secondRoll = y;
+    }
+    if (z) {
+      this.thirdRoll = z;
+    }
+  }
+  calculatePins() {
+    return this.score = this.firstRoll + this.secondRoll + this.thirdRoll;
+  }
+  hasSpare() {
+    if (this.firstRoll + this.secondRoll == 10 && this.firstRoll != 10) {
+      return true;
+    }
+  }
+  hasStrike() {
+    if (this.firstRoll == 10) {
+      return true;
+    }
+  }
+  getIndex() {
+    return this.index;
   }
   isSpare() {
     return this.pins() >= 10;

@@ -2,89 +2,76 @@
 
 describe('Game', function() {
   var game;
-  var frame;
+  var frame0;
+  var frame1;
   var frame2;
   var frame3;
+  var frame4;
+  var frame5;
+  var frame6;
+  var frame7;
+  var frame8;
+  var frame9;
 
   beforeEach(function() {
     game = new Game();
-    frame = jasmine.createSpyObj('frame', ['getRolls', 'pins', 'isSpare', 'isStrike']);
-    frame2 = jasmine.createSpyObj('frame', ['getRolls', 'pins', 'isSpare', 'isStrike']);
-    frame3 = jasmine.createSpyObj('frame', ['getRolls', 'pins', 'isSpare', 'isStrike']);
+    frame0 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+    frame1 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+    frame2 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+    frame0.getIndex.and.returnValue(0);
   })
   it('stores frames in the game', function() {
     expect(game.getFrames()).toEqual([]);
   })
   describe('#getFrame', function() {
     it('gets a new frame', function() {
-      game.getFrame(frame);
-      expect(game.getFrames()).toEqual([frame]);
-    })
-  })
-  describe('#calculatePins', function() {
-    it('calculates all pins knocked down in the game', function() {
-      frame.pins.and.returnValue(9);
-      frame2.pins.and.returnValue(13);
-      game.getFrame(frame);
-      game.getFrame(frame2);
-      expect(game.calculatePins()).toEqual(22);
+      game.getFrame(frame0);
+      expect(game.getFrames()).toEqual([frame0]);
     })
   })
   describe('#calculateGameScore', function() {
-    it('returns 0 when all rolls are 0 (gutter game)', function() {
-      frame.pins.and.returnValue(0);
-      frame.getRolls.and.returnValue([0, 0]);
-      for (var i = 0; i < 10; i++) {
-        game.frames[i] = frame;
-      }
-      expect(game.calculateGameScore()).toEqual(0);
-    })
-    it('returns 300 when all rolls are 10 (perfect game)', function() {
-      frame.isStrike.and.returnValue(true);
-      frame.pins.and.returnValue(10);
-      frame.getRolls.and.returnValue([10]);
-      frame2.isStrike.and.returnValue(true);
-      frame2.pins.and.returnValue(30);
-      frame2.getRolls.and.returnValue([10,10,10]);
-      for (var i = 0; i < 9; i++) {
-        game.frames[i] = frame;
-      };
-      game.frames[9] = frame2;
-      expect(game.calculateGameScore()).toEqual(300);
+    it('calculates game score', function() {
+      frame0.roll.and.returnValue(5, 2);
+      frame0.calculatePins.and.returnValue(7);
+      frame0.score = 7;
+      game.getFrame(frame0);
+      expect(game.calculateGameScore()).toEqual(7);
     })
   })
-
-  describe('#calculateBonus', function() {
-    beforeEach(function() {
-      frame.pins.and.returnValue(10);
-      game.getFrame(frame);
+  describe('calculateBonus', function() {
+    it('gets bonus when it has a spare', function() {
+      frame0.roll.and.returnValue(5,5);
+      frame0.hasSpare.and.returnValue(true);
+      frame0.score = 10;
+      game.getFrame(frame0);
+      frame1.getIndex.and.returnValue(1);
+      frame1.roll.and.returnValue(3,5);
+      frame1.firstRoll = 3;
+      game.getFrame(frame1);
+      expect(game.calculateBonus(frame0)).toEqual(3);
     })
-    it('calculates bonus for spares', function() {
-      frame2.getRolls.and.returnValue([4,5]);
-      frame2.pins.and.returnValue(9);
-      frame.isSpare.and.returnValue(true);
-      game.getFrame(frame2);
-
-      expect(game.calculateBonus()).toEqual(4);
+  })
+  describe('calculateFrameScore', function() {
+    it('calculates frame score', function() {
+      frame0.roll.and.returnValue(5, 2);
+      frame0.calculatePins.and.returnValue(7);
+      frame0.score = 7;
+      game.getFrame(frame0);
+      expect(game.calculateFrameScore(frame0)).toEqual(7);
     })
-    it('calculates bonus for strikes when next frame is not strike', function() {
-      frame.isStrike.and.returnValue(true);
-      frame2.getRolls.and.returnValue([4,5]);
-      frame2.pins.and.returnValue(9);
-      frame2.isStrike.and.returnValue(false);
-      game.getFrame(frame2);
-      expect(game.calculateBonus()).toEqual(9);
-    })
-    it('calculates bonus for strikes when next frame is strike', function() {
-      frame.isStrike.and.returnValue(true);
-      frame.pins.and.returnValue(10);
-      frame2.pins.and.returnValue(10);
-      frame2.isStrike.and.returnValue(true);
-      frame3.pins.and.returnValue(9);
-      frame3.getRolls.and.returnValue([4,5]);
-      game.getFrame(frame2);
-      game.getFrame(frame3);
-      expect(game.calculateBonus()).toEqual(14);
+  })
+  describe('calculateBonusForLast', function() {
+    it('calculates bonus for last', function() {
+      frame3 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame4 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame5 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame6 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame7 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame8 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      frame9 = jasmine.createSpyObj('frame', ['roll', 'calculatePins', 'hasSpare', 'hasStrike', 'getIndex']);
+      game.frames[8] = frame8;
+      frame8.hasStrike.and.returnValue(false);
+      expect(game.calculateBonusForLast()).toEqual(0);
     })
   })
 })
