@@ -1,77 +1,63 @@
 'use strict';
 
 class Game {
-
   constructor() {
     this.frames = [];
+    this.currentFrame = null;
+    this.currentIndex = 0;
+    this.totalScore = 0;
   }
   getFrames() {
     return this.frames;
   }
   getFrame(frame) {
+    this.currentFrame = frame;
+    this.currentIndex = this.currentFrame.getIndex();
     this.frames.push(frame);
     return frame;
   }
-  calculatePins() {
-    var total = 0;
-    if (this.isGameFinished()) {
-      for (var i = 0; i < this.frames.length - 1; i++) {
-        total += this.frames[i].pins();
-      }
-        total += this.frames[9].getRolls()[0];
-    } else {
-      this.frames.forEach((frame) => {
-        total += frame.pins();
-      });
-    }
-    return total;
-  }
   calculateGameScore() {
-    return this.calculatePins() + this.calculateBonus();
-  }
-  calculateBonus() {
-    return (this.calculateBonusAllFramesButLast() + this.calculateBonusForLast());
-  }
-  calculateBonusAllFramesButLast() {
-    var total = 0;
-
-    for (var i = 0; i < this.frames.length - 1; i++) {
-      var currentFrame = this.frames[i];
-      var nextFrame = this.frames[i+1];
-
-      if (currentFrame.isSpare()) {
-          total += nextFrame.getRolls()[0];
-      } else if (currentFrame.isStrike() && (nextFrame.isStrike())) {
-        if (i === 8) {
-          var lastFrameRolls = this.frames[9].getRolls();
-          total += (lastFrameRolls[0] + lastFrameRolls[1]);
-        } else {
-          total += (10 + this.frames[i+2].getRolls()[0]);
-        }
-      } else if (currentFrame.isStrike() && (nextFrame.isStrike() == false)) {
-        total += (nextFrame.pins());
-      } else {
-        total;
-      }
-    }
+    var total = 0
+    this.frames.forEach((item, i) => {
+      total = total + item.score;
+    });
     return total;
   }
-  calculateBonusForLast() {
-    if (this.isGameFinished()) {
-      var lastFrame = this.frames[9];
-
-      if (lastFrame.isSpare()) {
-        return lastFrame.getRolls()[2];
-      } else if (lastFrame.isStrike()) {
-        return lastFrame.getRolls()[1] + lastFrame.getRolls()[2];
+  calculateBonus(frame) {
+    var currentIndex = this.frames.indexOf(frame);
+    var nextIndex = currentIndex + 1
+    if (frame.hasSpare()) {
+      return this.frames[nextIndex].firstRoll;
+    } else if (frame.hasStrike()) {
+      if (this.frames[nextIndex].hasStrike()) {
+        return 10;
       } else {
-        return 0;
+        return this.frames[nextIndex].firstRoll + this.frames[nextIndex].secondRoll;
       }
     } else {
       return 0;
     }
   }
-  isGameFinished() {
-    return this.frames.length == 10;
+  calculateFrameScore(frame) {
+    var total = 0;
+    var currentIndex = this.frames.indexOf(frame);
+    var nextIndex = currentIndex + 1
+    if (this.frames[currentIndex + 2] &&
+        this.frames[nextIndex] &&
+        this.frames[currentIndex].hasStrike() &&
+        this.frames[nextIndex].hasStrike() ) {
+      total = frame.calculatePins() + this.calculateBonus(frame) + this.frames[currentIndex + 2].firstRoll;
+    } else {
+      total = frame.calculatePins() + this.calculateBonus(frame);
+    }
+    return frame.score = total;
+  }
+  calculateBonusForLast() {
+    if (this.frames[8].hasStrike() && this.frames[9].hasStrike()) {
+      console.log(this.frames[9].secondRoll)
+      return this.frames[9].secondRoll;
+    } else {
+      return 0;
+    }
   }
 }
