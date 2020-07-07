@@ -1,9 +1,10 @@
 
 Bowling Challenge
 =================
+This is a weekend challenge I did during Week 5 and 6 at Makers Academy. The project was to code the business logic of a bowling scorecard with Javascript, and a dynamic interface with JQuery. The code was test-driven, and I used Jasmine for testing.
 
 ## My approach
-----------
+
 * initialise project with Jasmine
 * create Frame and Game classes
 * add methods to calculate points within frame (without bonus)
@@ -11,6 +12,13 @@ Bowling Challenge
 * calculate bonus points within game
 * calculate bonus points for last frame (edge case)
 * test for gutter game and perfect game (edge cases)
+
+## How to use
+* Clone the repo
+* Open `index.html` in the browse
+
+## How to run the tests
+* Open `SpecRunner.html` in the browser
 
 ## The Task
 
